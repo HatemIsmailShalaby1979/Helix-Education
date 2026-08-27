@@ -1,0 +1,1 @@
+{"type": "record", "name": "AssessmentResultEvent", "fields": [{"name": "learner_id", "type": "string"}, {"name": "score", "type": "float"}, {"name": "competency_tags", "type": {"type": "array", "items": "string"}}]}

@@ -1,0 +1,44 @@
+graph TD
+    subgraph "Content Layer"
+        CM[Content Engine<br/>Markdown/JSON/SCORM]
+        CE[Content Events<br/>Created/Updated/Archived]
+    end
+
+    subgraph "Learning Core"
+        LE[Learning Service<br/>State Machine]
+        SE[State Engine<br/>Event Store]
+        PM[Progress Model<br/>Mastery/Spaced Rep]
+    end
+
+    subgraph "Delivery Layer"
+        DE[Delivery Engine<br/>Multi-Channel]
+        API[API Layer<br/>REST/GraphQL]
+        CLI[CLI Tools<br/>helix-learn / helix-web]
+    end
+
+    subgraph "Observability"
+        OT[OpenTelemetry<br/>Traces/Metrics/Logs]
+        EV[Event Stream<br/>Kafka/NATS/Redis]
+    end
+
+    CM --> CE
+    CE --> SE
+    SE --> LE
+    LE --> PM
+    PM --> DE
+    DE --> API
+    DE --> CLI
+    SE --> EV
+    LE --> OT
+    PM --> OT
+
+    style CM fill:#141d19,stroke:#2a4a3a
+    style CE fill:#141d19,stroke:#2a4a3a
+    style LE fill:#0a0f0d,stroke:#00ff88,stroke-width:2px
+    style SE fill:#0a0f0d,stroke:#00ff88,stroke-width:2px
+    style PM fill:#0a0f0d,stroke:#00ff88,stroke-width:2px
+    style DE fill:#141d19,stroke:#2a4a3a
+    style API fill:#141d19,stroke:#2a4a3a
+    style CLI fill:#141d19,stroke:#2a4a3a
+    style OT fill:#1e2d26,stroke:#00cc6a
+    style EV fill:#1e2d26,stroke:#00cc6a

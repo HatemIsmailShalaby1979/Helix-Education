@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  title: Training Content API
+  version: 1.0.0
+paths:
+  /training-content/generate:
+    post:
+      summary: Generate training content from gap patterns
+      security:
+        - BearerAuth: []
+  /training-content/{lesson_id}:
+    get:
+      summary: Get lesson details
+  /training-content/gap-patterns:
+    get:
+      summary: Query operational gap patterns
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

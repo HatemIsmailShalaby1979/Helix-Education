@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package helix.education.competency;
+
+service CompetencyProfileService {
+  rpc GetCompetencyProfile (CompetencyRequest) returns (CompetencyProfile);
+  rpc UpdateProficiency (ProficiencyUpdate) returns (UpdateStatus);
+}
+
+message CompetencyRequest {
+  string employee_id = 1;
+  string role_id = 2;
+}
+
+message CompetencyProfile {
+  string employee_id = 1;
+  string role_id = 2;
+  repeated SkillProfile skills = 3;
+  double overall_readiness_score = 4;
+  string last_updated = 5;
+}
+
+message SkillProfile {
+  string skill_name = 1;
+  string category = 2;
+  double proficiency_level = 3; // 0.0 to 1.0
+  string evidence_source = 4; // e.g., "Quiz: Q-123", "Assessment: A-456"
+}
+
+message ProficiencyUpdate {
+  string employee_id = 1;
+  string skill_name = 2;
+  double new_proficiency = 3;
+  string evidence_id = 4;
+}
+
+message UpdateStatus {
+  bool success = 1;
+  string message = 2;
+}

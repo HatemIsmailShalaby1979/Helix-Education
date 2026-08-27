@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helix-education-engine
+  namespace: helix-prime
+  labels:
+    app: helix-education
+    component: lnd-engine
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: helix-education
+  template:
+    metadata:
+      labels:
+        app: helix-education
+    spec:
+      containers:
+      - name: education-api
+        image: helix/education-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: HELIX_KMS_MASTER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: helix-secrets
+              key: kms-master-key
+        - name: EVENT_STORE_PATH
+          value: "/data/events.jsonl"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: event-store-volume
+          mountPath: /data
+      volumes:
+      - name: event-store-volume
+        persistentVolumeClaim:
+          claimName: helix-education-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helix-education-service
+  namespace: helix-prime
+spec:
+  selector:
+    app: helix-education
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

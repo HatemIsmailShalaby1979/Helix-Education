@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Architecture review — Helix Education Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+    </script>
+    <style>
+      .seam { stroke-dasharray: 4 4; }
+      .leak { stroke: #dc2626; stroke-width: 2px; }
+      .deep { background: linear-gradient(135deg, #0f172a, #1e293b); }
+      .module-box { border: 2px solid #334155; border-radius: 8px; padding: 12px; }
+      .shallow-box { border: 1px dashed #94a3b8; border-radius: 8px; padding: 12px; background: #f8fafc; }
+      .interface-box { border: 2px solid #22d3ee; border-radius: 6px; padding: 8px; background: #ecfeff; }
+      .adapter-badge { background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; }
+      .leverage-badge { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; }
+      .locality-badge { background: #e0e7ff; color: #312e81; padding: 2px 8px; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; }
+      .strong-badge { background: #dcfce7; color: #166534; }
+      .worth-badge { background: #fef08a; color: #854d0e; }
+      .speculative-badge { background: #f1f5f9; color: #475569; }
+      .warning-callout { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; padding: 12px; }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-slate-900 font-sans">
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+      <header class="space-y-2">
+        <h1 class="text-3xl font-bold tracking-tight">Architecture review — Helix Education Center</h1>
+        <p class="text-slate-500 text-sm">Generated 2026-07-18 · 3 candidates</p>
+        <div class="flex flex-wrap gap-3 text-xs">
+          <span class="px-2 py-1 bg-slate-100 border border-slate-200 rounded">solid box = module</span>
+          <span class="px-2 py-1 bg-slate-100 border border-slate-200 rounded">dashed line = seam</span>
+          <span class="px-2 py-1 bg-red-50 border border-red-200 rounded text-red-700">red arrow = leakage</span>
+          <span class="px-2 py-1 bg-slate-800 text-slate-100 rounded">dark box = deep module</span>
+        </div>
+      </header>
+
+      <section id="candidates" class="space-y-10">
+
+        <!-- Candidate 1 -->
+        <article class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-6 space-y-6">
+          <header class="flex flex-wrap items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold">Candidate 1 — Collapse the Quiz Pipeline into a Deep Quiz Module</h2>
+            <div class="flex items-center gap-3">
+              <span class="strong-badge px-3 py-1 rounded-full text-sm font-medium">Strong</span>
+              <span class="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full font-medium">✅ Validated via prototype</span>
+            </div>
+          </header>
+
+          <div class="flex flex-wrap gap-3 text-xs">
+            <span class="adapter-badge">ports & adapters</span>
+            <span class="leverage-badge">high leverage</span>
+            <span class="locality-badge">improves locality</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-mono">
+            <div class="col-span-1">
+              <h4 class="font-medium text-slate-700 mb-2">Files</h4>
+              <ul class="space-y-1 text-slate-600">
+                <li>quiz_engine/quiz_service.py</li>
+                <li>quiz_engine/quiz_models.py</li>
+                <li>learning_service/__init__.py</li>
+                <li>state_core/scoring_engine.py</li>
+                <li>api_layer/routes.py</li>
+              </ul>
+            </div>
+            <div class="col-span-2">
+              <h4 class="font-medium text-slate-700 mb-2">Problem</h4>
+              <p class="text-slate-600">Quiz pipeline is shallow across 4 modules: QuizService manages sessions in-memory, LearningService coordinates events, ScoringEngine scores answers, Router translates HTTP. Interface surface nearly matches implementation — no deep module owns the quiz lifecycle.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <h4 class="text-sm font-medium text-center mb-3 text-slate-600">Before — Shallow pipeline</h4>
+              <pre class="mermaid text-xs">
+flowchart LR
+  Router[Router] --> QuizSvc[QuizService]
+  QuizSvc -.leak.-> LearningSvc[LearningService]
+  QuizSvc -.leak.-> ScoreEng[ScoringEngine]
+  LearningSvc --> EventStore[(EventStore)]
+  LearningSvc -.leak.-> KeyStore[SealedAnswerKeyStore]
+  classDef shallow fill:#f8fafc,stroke:#94a3b8,stroke-dasharray: 4 4;
+  classDef leak stroke:#dc2626,stroke-width:2px;
+  class QuizSvc,LearningSvc,ScoreEng shallow
+  class QuizSvc,LearningSvc,ScoreEng leak
+              </pre>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-white p-4">
+              <h4 class="text-sm font-medium text-center mb-3 text-slate-600">After — Deep Quiz Module</h4>
+              <pre class="mermaid text-xs">
+flowchart LR
+  Router[Router] --> QuizModule[QuizModule<br/><span class="text-xs font-normal">deep</span>]
+  QuizModule --> EventStore[(EventStore)]
+  QuizModule --> KeyStore[SealedAnswerKeyStore]
+  classDef deep fill:#0f172a,color:#e2e8f0,stroke:#22d3ee,stroke-width:2px;
+  classDef iface fill:#ecfeff,stroke:#22d3ee;
+  class QuizModule deep
+  class Router iface
+              </pre>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-medium mb-2">Solution</h4>
+              <p class="text-slate-600 text-sm">Fuse QuizService, quiz session logic, quiz item persistence, and scoring into a single deep QuizModule. The module owns the quiz lifecycle end-to-end. Only one public interface: start, answer, complete, summary. Router calls the interface; implementation details (event store, key store, scoring) are private.</p>
+              <p class="text-slate-600 text-sm mt-2"><strong>Prototype:</strong> <code>quiz_engine/quiz_module_prototype.py</code> — run with <code>python -m quiz_engine.quiz_module_prototype</code></p>
+            </div>
+            <div>
+              <h4 class="font-medium mb-2">Wins</h4>
+              <ul class="space-y-1 text-sm text-slate-600">
+                <li>✅ Tests hit one interface</li>
+                <li>✅ Scoring logic stops leaking</li>
+                <li>✅ Delete 3 shallow wrappers</li>
+                <li>✅ Locality: bugs concentrate in quiz module</li>
+                <li>✅ Leverage: one interface, N call sites</li>
+                <li>✅ Interface shrinks; implementation absorbs wrappers</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Candidate 2 -->
+        <article class="rounded-xl border border-slate-200 bg-white p-6 space-y-6">
+          <header class="flex flex-wrap items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold">Candidate 2 — Deepen the Content Pipeline: Fuse ContentService + LearningService Lesson Events</h2>
+            <span class="worth-badge px-3 py-1 rounded-full text-sm font-medium">Worth exploring</span>
+          </header>
+
+          <div class="flex flex-wrap gap-3 text-xs">
+            <span class="adapter-badge">in-process</span>
+            <span class="leverage-badge">medium leverage</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-mono">
+            <div class="col-span-1">
+              <h4 class="font-medium text-slate-700 mb-2">Files</h4>
+              <ul class="space-y-1 text-slate-600">
+                <li>content_engine/content_service.py</li>
+                <li>content_engine/content_models.py</li>
+                <li>learning_service/__init__.py</li>
+                <li>state_core/event_models.py</li>
+              </ul>
+            </div>
+            <div class="col-span-2">
+              <h4 class="font-medium text-slate-700 mb-2">Problem</h4>
+              <p class="text-slate-600">ContentService rebuilds lessons from events on init, but also maintains its own in-memory Lesson/Section models. LearningService emits LessonSectionCommittedEvent. Two modules hold lesson state — ContentService for queries, LearningService for events. The seam leaks: ContentService._rebuild_from_events() re-reads the event log on every instantiation.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <h4 class="text-sm font-medium text-center mb-3 text-slate-600">Before — Duplicate lesson state</h4>
+              <pre class="mermaid text-xs">
+flowchart LR
+  Router[Router] --> ContentSvc[ContentService]
+  ContentSvc -.leak.-> LearningSvc[LearningService]
+  ContentSvc -.rebuild.-> EventStore[(EventStore)]
+  LearningSvc --> EventStore
+  classDef shallow fill:#f8fafc,stroke:#94a3b8,stroke-dasharray: 4 4;
+  classDef leak stroke:#dc2626,stroke-width:2px;
+  class ContentSvc,LearningSvc shallow
+  class ContentSvc,LearningSvc leak
+              </pre>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-white p-4">
+              <h4 class="text-sm font-medium text-center mb-3 text-slate-600">After — Deep Content Module</h4>
+              <pre class="mermaid text-xs">
+flowchart LR
+  Router[Router] --> ContentModule[ContentModule<br/><span class="text-xs font-normal">deep</span>]
+  ContentModule --> EventStore[(EventStore)]
+  classDef deep fill:#0f172a,color:#e2e8f0,stroke:#22d3ee,stroke-width:2px;
+  classDef iface fill:#ecfeff,stroke:#22d3ee;
+  class ContentModule deep
+  class Router iface
+              </pre>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-medium mb-2">Solution</h4>
+              <p class="text-slate-600 text-sm">Merge ContentService into LearningService (or a new ContentModule). Lesson/Section models become private. Event log remains the single source of truth; projections compute lesson state on demand. One module owns the content lifecycle: create, commit section, list, delete.</p>
+            </div>
+            <div>
+              <h4 class="font-medium mb-2">Wins</h4>
+              <ul class="space-y-1 text-sm text-slate-600">
+                <li>✅ Eliminates dual lesson state</li>
+                <li>✅ _rebuild_from_events() disappears</li>
+                <li>✅ Locality: content bugs in one module</li>
+                <li>✅ Interface shrinks; implementation absorbs projection logic</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- Candidate 3 -->
+        <article class="rounded-xl border border-slate-200 bg-white p-6 space-y-6">
+          <header class="flex flex-wrap items-center justify-between gap-4">
+            <h2 class="text-xl font-semibold">Candidate 3 — Collapse the Delivery Engine into the Feedback Seam</h2>
+            <span class="speculative-badge px-3 py-1 rounded-full text-sm font-medium">Speculative</span>
+          </header>
+
+          <div class="flex flex-wrap gap-3 text-xs">
+            <span class="adapter-badge">local-substitutable</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-mono">
+            <div class="col-span-1">
+              <h4 class="font-medium text-slate-700 mb-2">Files</h4>
+              <ul class="space-y-1 text-slate-600">
+                <li>delivery_engine/feedback_service.py</li>
+                <li>delivery_engine/delivery_models.py</li>
+                <li>api_layer/routes.py</li>
+              </ul>
+            </div>
+            <div class="col-span-2">
+              <h4 class="font-medium text-slate-700 mb-2">Problem</h4>
+              <p class="text-slate-600">DeliveryEngine is a single-class FeedbackService that transforms ScoreResult into FeedbackMessage. It has one caller (Router). The interface (FeedbackService.score_feedback) is nearly as complex as the implementation. Only one adapter exists (the real one) — no test double justifies the seam.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <h4 class="text-sm font-medium text-center mb-3 text-slate-600">Before — Single-adapter seam</h4>
+              <pre class="mermaid text-xs">
+flowchart LR
+  Router[Router] --> FeedbackSvc[FeedbackService]
+  FeedbackSvc --> LearningSvc[LearningService]
+  classDef shallow fill:#f8fafc,stroke:#94a3b8,stroke-dasharray: 4 4;
+  class FeedbackSvc,LearningSvc shallow
+              </pre>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-white p-4">
+              <h4 class="text-sm font-medium text-center mb-3 text-slate-600">After — Inline feedback logic</h4>
+              <pre class="mermaid text-xs">
+flowchart LR
+  Router[Router] --> LearningSvc[LearningService]
+  LearningSvc --> ScoreResult[score_feedback<br/><span class="text-xs font-normal">pure fn</span>]
+  classDef deep fill:#0f172a,color:#e2e8f0,stroke:#22d3ee,stroke-width:2px;
+  classDef iface fill:#ecfeff,stroke:#22d3ee;
+  class LearningSvc deep
+  class Router iface
+              </pre>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-medium mb-2">Solution</h4>
+              <p class="text-slate-600 text-sm">Inline the feedback transformation into LearningService.submit_and_score_answer() as a pure function. Remove DeliveryEngine entirely. If a second adapter (e.g., LLM-based feedback) appears later, reintroduce the seam — but not before.</p>
+            </div>
+            <div>
+              <h4 class="font-medium mb-2">Wins</h4>
+              <ul class="space-y-1 text-sm text-slate-600">
+                <li>✅ Delete entire delivery_engine/</li>
+                <li>✅ No hypothetical seam</li>
+                <li>✅ Feedback logic co-located with scoring</li>
+                <li>⚠️ Only if no second adapter materializes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="warning-callout text-sm">
+            <strong>⚠ ADR consideration:</strong> If ADR-0003 ("separate feedback for future LLM integration") exists, this candidate contradicts it. Worth reopening only if the LLM feedback layer has not materialized after 6+ months and the seam remains single-adapter.
+          </div>
+        </article>
+
+      </section>
+
+      <section id="top-recommendation" class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-6 space-y-4">
+        <header class="flex items-center gap-3">
+          <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          <h2 class="text-xl font-semibold text-emerald-800">Top recommendation: Candidate 1</h2>
+        </header>
+        <p class="text-emerald-700">The quiz pipeline is the hottest path in the system — every learner interaction flows through it. It currently spans 4 modules with leaky seams, forcing tests to either mock 3 layers or hit the full event stack. Collapsing it into a deep <strong>QuizModule</strong> gives the highest leverage: one interface for the Router, all implementation details private, scoring logic co-located with session state, and a single module to test.</p>
+        <p class="text-emerald-700 text-sm"><a href="#candidates" class="underline">Jump to Candidate 1 card</a></p>
+      </section>
+
+    </main>
+  </body>
+</html>
