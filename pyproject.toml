@@ -24,6 +24,7 @@ dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
     "cryptography>=42.0",
+    "fastapi>=0.115",
 ]
 
 [project.scripts]
@@ -36,7 +37,7 @@ Homepage = "https://github.com/HatemIsmailShalaby1979/Helix-Education"
 Repository = "https://github.com/HatemIsmailShalaby1979/Helix-Education"
 
 [tool.setuptools.packages.find]
-include = ["state_core*", "learning_service*", "content_engine*", "quiz_engine*", "progress_engine*", "delivery_engine*", "api_layer*", "cognitive_engine*", "cognitive_agent*", "helix_education*", "grounding_engine*", "observability*"]
+include = ["state_core*", "learning_service*", "content_engine*", "quiz_engine*", "progress_engine*", "delivery_engine*", "api_layer*", "helix_education*", "grounding_engine*", "observability*"]
 
 [tool.ruff]
 line-length = 120
