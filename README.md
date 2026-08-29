@@ -8,7 +8,7 @@
 
 Helix Education is a standalone learning-state engine designed around replayable events, citation-grounded content, sealed assessment, adaptive paths, and inspectable learner progress.
 
-It is a sibling system in the Helix ecosystem—not yet a production-integrated module of Helix Prime.
+It is a sibling system in the Helix ecosystem — not yet a production-integrated module of Helix Prime.
 
 ## Verified status
 
@@ -40,29 +40,33 @@ Helix Education provides the learning and development foundation for the broader
 
 ### Windows
 
-    py -3.11 -m venv .venv
-    .venv\Scripts\activate
-    python -m pip install --upgrade pip
-    python -m pip install -e ".[dev]"
-    python -m pytest -q
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+python -m pytest -q
+```
 
 ### Linux
 
-    python3.11 -m venv .venv
-    source .venv/bin/activate
-    python -m pip install --upgrade pip
-    python -m pip install -e ".[dev]"
-    python -m pytest -q
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+python -m pytest -q
+```
 
 Python 3.11–3.13 are supported by current CI workflows.
 
 ## Layout
 
-- state_core/ — event sourcing, scoring, projections, sealed-key store
-- content_engine/ — citation-grounded lesson generation
-- quiz_engine/ — assessment and scoring
-- learning_path/ — adaptive learning logic
-- grpc/ — competency contract; service wiring remains pending
+- `state_core/` — event sourcing, scoring, projections, sealed-key store
+- `content_engine/` — citation-grounded lesson generation
+- `quiz_engine/` — assessment and scoring
+- `learning_path/` — adaptive learning logic
+- `grpc/` — competency contract; service wiring remains pending
 
 ## Honest boundary
 
@@ -77,3 +81,5 @@ The project is a verified standalone engine and a strong ecosystem component. It
 ## License
 
 MIT
+
+Part of a larger body of work — see [Hatem Shalaby's profile](https://github.com/HatemIsmailShalaby1979) for the full story.
