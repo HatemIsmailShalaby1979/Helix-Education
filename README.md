@@ -9,7 +9,7 @@ It is a sibling system in the Helix ecosystem—not yet a production-integrated 
 ## Verified status
 
 - **Alpha / research product**
-- **447 tests reported in the repository**
+- **447 tests passing** in the current CI-supported build
 - Core event-sourced learning state is implemented
 - External grounding and LLM services are mocked or stubbed in tests
 - gRPC competency contracts exist, but a functional gRPC service is not yet wired
@@ -27,19 +27,30 @@ It is a sibling system in the Helix ecosystem—not yet a production-integrated 
 
 ## Why it matters to Helix Codex
 
-Helix Education provides the learning and development foundation for the broader Codex direction:
+Helix Education provides the learning and development foundation for the broader Codex direction: operational knowledge can become structured learning, outcomes can improve future training, progress can remain auditable, and learning records can preserve context.
 
-- operational knowledge can become structured learning;
-- outcomes can improve future training;
-- progress can remain auditable;
-- learning records can preserve context instead of becoming disconnected reports.
+## Download and install
 
-## Install
+- [Download current source ZIP](https://github.com/HatemIsmailShalaby1979/Helix-Education/archive/refs/heads/main.zip)
+- [View releases](https://github.com/HatemIsmailShalaby1979/Helix-Education/releases)
 
-    python -m venv .venv
+### Windows
+
+    py -3.11 -m venv .venv
+    .venv\Scripts\activate
+    python -m pip install --upgrade pip
+    python -m pip install -e ".[dev]"
+    python -m pytest -q
+
+### Linux
+
+    python3.11 -m venv .venv
     source .venv/bin/activate
-    pip install -e .
-    pytest -q
+    python -m pip install --upgrade pip
+    python -m pip install -e ".[dev]"
+    python -m pytest -q
+
+Python 3.11–3.13 are supported by current CI workflows.
 
 ## Layout
 
