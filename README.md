@@ -1,57 +1,63 @@
 # Helix Education
 
-Event-sourced learning state engine. Standalone. Well-tested. Not yet wired into Helix Prime.
+> **An event-sourced learning engine built for accountable progress.**
 
-## What it does
+Helix Education is a standalone learning-state engine designed around replayable events, citation-grounded content, sealed assessment, adaptive paths, and inspectable learner progress.
 
-- **Event-sourced core** — Append-only event store with full state reconstruction. No database needed.
-- **Citation-grounded content** — Generated material validated against a citation index to prevent hallucination.
-- **Sealed quiz scoring** — Answer keys sealed and exchanged through a store, not plaintext JSONL.
-- **Adaptive paths** — Learning paths adjust based on quiz performance.
-- **Progress tracking** — Milestones, scoring, state mutators.
+It is a sibling system in the Helix ecosystem—not yet a production-integrated module of Helix Prime.
 
-## Honest status
+## Verified status
 
-**Alpha.** 447 passing tests (pytest, verified 2026-08-04). Core engine is solid.
+- **Alpha / research product**
+- **447 tests reported in the repository**
+- Core event-sourced learning state is implemented
+- External grounding and LLM services are mocked or stubbed in tests
+- gRPC competency contracts exist, but a functional gRPC service is not yet wired
+- No production client deployment is claimed
 
-What's not done: gRPC competency contract is defined but stubs aren't wired in — no functional gRPC service yet. Not connected to Helix Prime in production. No client deployments.
+## Core capabilities
 
-Tests use mocked/stubbed external services (grounding search, LLM) — correct testing practice, but means no live integration exercised.
+- Event-sourced records with state reconstruction
+- Citation-grounded learning content
+- Sealed quiz scoring
+- Adaptive learning paths
+- Progress and milestone tracking
+- Portable, inspectable learning history
+- Zero AI dependency in the core engine
+
+## Why it matters to Helix Codex
+
+Helix Education provides the learning and development foundation for the broader Codex direction:
+
+- operational knowledge can become structured learning;
+- outcomes can improve future training;
+- progress can remain auditable;
+- learning records can preserve context instead of becoming disconnected reports.
 
 ## Install
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-pip install -e .
-```
-
-## Run tests
-
-```bash
-pytest -q
-```
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -e .
+    pytest -q
 
 ## Layout
 
-```
-state_core/        Event sourcing, scoring, projections, sealed-key store
-content_engine/    Lesson/content generation with citation grounding
-quiz_engine/       Quiz modeling and scoring
-learning_path/     Adaptive path logic
-grpc/              Competency contract (stubs not wired)
-```
+- state_core/ — event sourcing, scoring, projections, sealed-key store
+- content_engine/ — citation-grounded lesson generation
+- quiz_engine/ — assessment and scoring
+- learning_path/ — adaptive learning logic
+- grpc/ — competency contract; service wiring remains pending
 
-## Why this exists
+## Honest boundary
 
-I needed a learning engine that's auditable (event sourcing), honest (citation grounding), and testable (sealed keys). Built it separate so it can be used independently or plugged into Helix Prime later.
+The project is a verified standalone engine and a strong ecosystem component. It is not presented as a production learning platform or as fully integrated with Helix Prime.
 
-## Stack
+## Related projects
 
-- Python 3.11+ (targets 3.13)
-- Pydantic for models
-- pytest for tests (447)
-- Zero AI dependencies in core engine
+- [Helix Prime](https://github.com/HatemIsmailShalaby1979/Helix-Prime)
+- [Study Studio](https://github.com/HatemIsmailShalaby1979/Study-Studio)
+- [L&D Command Center](https://github.com/HatemIsmailShalaby1979/L-D-Command-Center)
 
 ## License
 
