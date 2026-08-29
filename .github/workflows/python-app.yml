@@ -35,5 +35,4 @@ jobs:
         run: python -m pytest -q
 
       - name: Generate Flake8 report (advisory)
-        continue-on-error: true
-        run: flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
+        run: flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
