@@ -4,7 +4,11 @@ Provides a pure function for splitting raw text into bounded,
 citation-carrying chunks suitable for LLM grounding context.
 """
 
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 from .grounding_models import SourceChunk
 
@@ -138,7 +142,7 @@ def split_into_chunks(
             chunk_text = remaining
             remaining = ""
         else:
-            # Need to split — try paragraph break first
+            # Need to split â€” try paragraph break first
             split_pos = _find_paragraph_break(remaining, max_chars)
             if split_pos is None:
                 # Fall back to sentence break

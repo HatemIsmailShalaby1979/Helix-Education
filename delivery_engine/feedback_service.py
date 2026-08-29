@@ -1,9 +1,13 @@
-"""Feedback Service — generates human-readable feedback from scoring results.
+"""Feedback Service â€” generates human-readable feedback from scoring results.
 
-Pure transformation functions — no side effects, no I/O.
+Pure transformation functions â€” no side effects, no I/O.
 """
 
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 from learning_service import LearningService
 from state_core.scoring_engine import ScoreResult

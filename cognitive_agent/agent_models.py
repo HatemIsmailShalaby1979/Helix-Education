@@ -4,7 +4,7 @@ Defines the strict schema that the LLM must produce for lesson sections.
 This is the trust boundary between LLM output and trusted data.
 """
 
-from typing import Self
+from typing_extensions import Self
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, field_validator
 class LessonSectionGenerationError(Exception):
     """Raised when LLM output fails schema validation or is otherwise untrustworthy.
 
-    Callers must handle this — it is NOT optional to catch, and it must never be
+    Callers must handle this â€” it is NOT optional to catch, and it must never be
     silently swallowed into a fabricated fallback section.
     """
 
@@ -32,7 +32,7 @@ class LessonSectionDraft(BaseModel):
         description=(
             "Indices into the grounding_chunks list passed in, identifying which "
             "chunks this section actually draws from. MUST reference at least "
-            "one valid index — a section with zero sources is a validation "
+            "one valid index â€” a section with zero sources is a validation "
             "failure, not a warning."
         )
     )

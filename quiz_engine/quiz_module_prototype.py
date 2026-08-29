@@ -1,5 +1,5 @@
 """
-QuizModule — Deep module owning the quiz lifecycle end-to-end.
+QuizModule â€” Deep module owning the quiz lifecycle end-to-end.
 
 This is a THROWAAWAY PROTOTYPE to validate the interface and state model.
 Located at: quiz_engine/quiz_module_prototype.py
@@ -9,7 +9,11 @@ Run with: python -m quiz_engine.quiz_module_prototype
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 from pathlib import Path
 from uuid import uuid4
 
@@ -20,12 +24,12 @@ from state_core.event_models import (
     QuizItemCreatedEvent,
 )
 
-# ── Dependencies (interfaces we receive) ─────────────────────────────
+# â”€â”€ Dependencies (interfaces we receive) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 from state_core.event_store import EventStore, SealedAnswerKeyStore, StoreConfig
 from state_core.leveling_engine import compute_level
 from state_core.projections import project_topic_state
 
-# ── ScoringEngine inlined as private methods ─────────────────────────
+# â”€â”€ ScoringEngine inlined as private methods â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 @dataclass
@@ -92,7 +96,7 @@ def _compute_key_hash(key: _AnswerKey) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-# ── Public dataclasses (interface types) ─────────────────────────────
+# â”€â”€ Public dataclasses (interface types) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 @dataclass
@@ -143,7 +147,7 @@ class SessionSummary:
     completed_at: str | None
 
 
-# ── QuizModule — the deep module ─────────────────────────────────────
+# â”€â”€ QuizModule â€” the deep module â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 class QuizModule:
@@ -177,7 +181,7 @@ class QuizModule:
         self._sessions: dict[str, QuizSession] = {}
         self._rebuild_quizzes_from_events()
 
-    # ── Internal: rebuild quiz metadata from event log ──────────────
+    # â”€â”€ Internal: rebuild quiz metadata from event log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def _rebuild_quizzes_from_events(self) -> None:
         events = self._events.read_all()
@@ -205,7 +209,7 @@ class QuizModule:
                         )
                     )
 
-    # ── Session persistence (event-sourced) ─────────────────────────
+    # â”€â”€ Session persistence (event-sourced) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def _persist_session_start(self, session: QuizSession) -> None:
         # In a full impl, we'd emit a QuizSessionStartedEvent
@@ -243,7 +247,7 @@ class QuizModule:
         # In a full impl, we'd emit a QuizSessionCompletedEvent
         pass
 
-    # ── Public Interface: Quiz Management ───────────────────────────
+    # â”€â”€ Public Interface: Quiz Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def create_quiz(
         self,
@@ -313,7 +317,7 @@ class QuizModule:
     def list_quizzes(self, topic: str) -> list[Quiz]:
         return [q for q in self._quizzes.values() if q.topic == topic]
 
-    # ── Public Interface: Session Management ────────────────────────
+    # â”€â”€ Public Interface: Session Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def start_quiz(self, topic: str, quiz_id: str) -> str:
         """Start a new quiz session. Returns session_id."""
@@ -410,7 +414,7 @@ class QuizModule:
             completed_at=session.completed_at,
         )
 
-    # ── Public Interface: Topic State Queries ───────────────────────
+    # â”€â”€ Public Interface: Topic State Queries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def get_topic_state(self, topic: str):
         """Compute topic state by projecting events."""
@@ -423,7 +427,7 @@ class QuizModule:
         return compute_level(state)
 
 
-# ── Demo / Test Harness ──────────────────────────────────────────────
+# â”€â”€ Demo / Test Harness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 def run_demo() -> None:

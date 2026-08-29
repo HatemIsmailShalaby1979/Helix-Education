@@ -1,4 +1,8 @@
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 from uuid import uuid4
 
 from learning_service import LearningService
@@ -29,13 +33,13 @@ class CognitiveService:
     def __init__(self, learning: LearningService) -> None:
         self._learning = learning
 
-    # ── Cognitive State Projection ──────────────────────────────────
+    # â”€â”€ Cognitive State Projection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def _project_cognitive_state(self):
         """Get the current cognitive state by replaying all events."""
         return project_cognitive_state(self._learning._event_store.read_all())
 
-    # ── Knowledge Map (unchanged - reads from event log directly) ───
+    # â”€â”€ Knowledge Map (unchanged - reads from event log directly) â”€â”€â”€
 
     def build_knowledge_map(self) -> KnowledgeMap:
         events = self._learning._event_store.read_all()
@@ -143,7 +147,7 @@ class CognitiveService:
             quiz_mastery=quiz_mastery,
         )
 
-    # ── Recommendations (generated from knowledge map) ──────────────
+    # â”€â”€ Recommendations (generated from knowledge map) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def get_recommendations(self) -> list[Recommendation]:
         km = self.build_knowledge_map()
@@ -214,7 +218,7 @@ class CognitiveService:
 
         return recs
 
-    # ── Event-sourced Recommendation Management ────────────────────
+    # â”€â”€ Event-sourced Recommendation Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def propose_recommendation(
         self,
@@ -307,7 +311,7 @@ class CognitiveService:
         self._learning._event_store.append(event)
         return True
 
-    # ── Event-sourced Session Management ────────────────────────────
+    # â”€â”€ Event-sourced Session Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def start_session(self, topic: str) -> str:
         sid = str(uuid4())
@@ -443,14 +447,14 @@ class CognitiveService:
                     category="engagement",
                     title="Active exploration",
                     description=f"You requested deeper dives on {topics_with_depth} topic(s).",
-                    recommendation="This shows good curiosity — keep exploring complex topics.",
+                    recommendation="This shows good curiosity â€” keep exploring complex topics.",
                     timestamp=now.isoformat(),
                 )
             )
 
         return insights
 
-    # ── Computed property for backward compatibility ────────────────
+    # â”€â”€ Computed property for backward compatibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     @property
     def _recommendations(self) -> dict[str, Recommendation]:

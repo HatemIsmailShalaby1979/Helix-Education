@@ -5,7 +5,11 @@ All events are immutable after creation.
 """
 
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 from typing import Any
 from uuid import uuid4
 
@@ -222,7 +226,7 @@ class ProfileDeltaProposedEvent(Event):
 class LessonDeletedEvent(Event):
     """Emitted when a lesson is removed from the content store.
 
-    Past events are not mutated — this event marks the deletion so
+    Past events are not mutated â€” this event marks the deletion so
     replays can reflect the current state accurately.
     """
 

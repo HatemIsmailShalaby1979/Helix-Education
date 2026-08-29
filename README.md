@@ -74,4 +74,4 @@ separately verified.
 There is known, non-functional lint debt (ruff findings, mostly line length and
 style) that is real but low-priority cleanup.
 
-Part of a larger body of work — see [Hatem Shalaby's profile](https://github.com/HatemShelby) for the full story.
+Part of a larger body of work — see [Hatem Shalaby's profile](https://github.com/HatemIsmailShalaby1979) for the full story.

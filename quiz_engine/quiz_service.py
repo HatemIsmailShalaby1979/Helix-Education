@@ -1,4 +1,4 @@
-"""Quiz Service — quiz and session management.
+"""Quiz Service â€” quiz and session management.
 
 Coordinates with the Learning Service to create quiz items, manage
 sessions, and aggregate results. Sessions are tracked in-memory with
@@ -6,7 +6,11 @@ event-sourced persistence through the Learning Service.
 """
 
 import time
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 from uuid import uuid4
 
 from learning_service import LearningService
@@ -61,7 +65,7 @@ class QuizService:
                         )
                     )
 
-    # ── Quiz Management ──────────────────────────────────────────
+    # â”€â”€ Quiz Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def create_quiz(
         self,
@@ -167,7 +171,7 @@ class QuizService:
         """
         return [q for q in self._quizzes.values() if q.topic == topic]
 
-    # ── Session Management ───────────────────────────────────────
+    # â”€â”€ Session Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def start_session(self, quiz_id: str) -> str:
         """Start a new quiz session for a learner.

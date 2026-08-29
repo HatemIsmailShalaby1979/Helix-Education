@@ -1,7 +1,7 @@
 """
-run_full_lesson_with_quiz.py — Full lesson + quiz pipeline for "Python modules".
+run_full_lesson_with_quiz.py â€” Full lesson + quiz pipeline for "Python modules".
 
-Reuses scripts/run_first_real_lesson.py's dependency construction — SAME
+Reuses scripts/run_first_real_lesson.py's dependency construction â€” SAME
 ./data/events.jsonl path, appending to the real "Python modules" topic
 already committed there.
 
@@ -14,7 +14,7 @@ non-placeholder excerpt only if genuinely needed for sec-003 (sourced from
 docs.python.org's modules tutorial page, already in use).
 
 Quiz items are dynamically generated from the section content using
-QuizGeneratorService — no hardcoded quiz specs.
+QuizGeneratorService â€” no hardcoded quiz specs.
 
 Calls lesson_orchestrator.generate_full_lesson(...) with all of the above.
 
@@ -24,12 +24,16 @@ Prints, in order:
   - total LessonSectionCommittedEvent count (expect >3, append-only log)
   - QuizCreatedEvent and QuizItemCreatedEvent counts
 
-Any exception prints full traceback — no silent catch.
+Any exception prints full traceback â€” no silent catch.
 """
 
 import os
 import traceback
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 from cognitive_agent.agent_client import OllamaAgentClient
 from cognitive_agent.agent_service import CognitiveAgentService
@@ -49,9 +53,9 @@ from state_core.event_models import (
 )
 from state_core.event_store import EventStore, SealedAnswerKeyStore, StoreConfig
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # TOP-OF-FILE CONFIGURATION
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 TOPIC = "Python modules"
 LEVEL = "beginner"
@@ -106,7 +110,7 @@ ADDITIONAL_EXCERPT_FOR_IMPORTING = {
         "the file is executed as a script."
     ),
     "source_url": "https://docs.python.org/3/tutorial/modules.html",
-    "source_title": "6. Modules (Python 3.14.6 Documentation) — Module initialization",
+    "source_title": "6. Modules (Python 3.14.6 Documentation) â€” Module initialization",
 }
 
 # All excerpts for grounding
@@ -115,9 +119,9 @@ ALL_EXCERPTS = CURATED_EXCERPTS + [ADDITIONAL_EXCERPT_FOR_IMPORTING]
 OLLAMA_MODEL_NAME = "lfm2.5:8b"  # Verify this matches your `ollama list`
 OLLAMA_NUM_CTX = 4096
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # VALIDATION: Fail loudly if any placeholder-looking value is detected
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 PLACEHOLDER_PATTERNS = [
     "example.com",
@@ -142,9 +146,9 @@ for excerpt in ALL_EXCERPTS:
             f"Placeholder detected in content: '{pattern}' found in '{excerpt['content'][:80]}...'"
         )
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # BUILD SOURCE CHUNKS FROM CURATED EXCERPTS
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 
 def build_source_chunks(excerpts: list[dict]) -> list[SourceChunk]:
@@ -174,9 +178,9 @@ GROUNDING_RESULT = GroundingResult(
     fetched_at=datetime.now(UTC).isoformat(),
 )
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # MAIN SCRIPT
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 if __name__ == "__main__":
     try:
@@ -329,6 +333,6 @@ if __name__ == "__main__":
         print(f"{'=' * 60}\n")
 
     except Exception:
-        # Any exception prints full traceback — no silent catch
+        # Any exception prints full traceback â€” no silent catch
         traceback.print_exc()
         raise

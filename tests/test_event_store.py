@@ -1,3 +1,4 @@
+import time
 """Tests for state_core.event_store."""
 
 import logging
@@ -43,8 +44,9 @@ class TestEventStore:
 
     def test_read_since(self, store) -> None:
         e1 = TopicStartedEvent.create(topic="early")
-        e2 = TopicStartedEvent.create(topic="late")
         store.append(e1)
+        time.sleep(0.001)
+        e2 = TopicStartedEvent.create(topic="late")
         store.append(e2)
         later_events = store.read_since(e1.timestamp)
         assert len(later_events) == 1

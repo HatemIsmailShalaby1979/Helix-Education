@@ -4,13 +4,17 @@ not a new architectural module. This composes ONLY existing, already-tested
 services. Do not modify any existing file. If anything is unclear, stop and
 ask rather than improvising new logic into an existing service.
 
-PROJECT: Helix Education Center — Learning Engine (existing, not new)
+PROJECT: Helix Education Center â€” Learning Engine (existing, not new)
 New location: scripts/run_first_real_lesson.py (create a scripts/
 directory if one doesn't exist)
 """
 
 import os
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 from cognitive_agent.agent_client import OllamaAgentClient
 from cognitive_agent.agent_service import CognitiveAgentService
@@ -23,9 +27,9 @@ from learning_service import LearningService
 from state_core.event_models import LessonSectionCommittedEvent
 from state_core.event_store import EventStore, SealedAnswerKeyStore, StoreConfig
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # TOP-OF-FILE CONFIGURATION
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 TOPIC = "Python modules"
 LEVEL = "beginner"
@@ -70,9 +74,9 @@ CURATED_EXCERPTS = [
 OLLAMA_MODEL_NAME = "lfm2.5:8b"  # Verify this matches your `ollama list`
 OLLAMA_NUM_CTX = 4096
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # VALIDATION: Fail loudly if any placeholder-looking value is detected
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 PLACEHOLDER_PATTERNS = [
     "example.com",
@@ -97,9 +101,9 @@ for excerpt in CURATED_EXCERPTS:
             f"Placeholder detected in content: '{pattern}' found in '{excerpt['content'][:80]}...'"
         )
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # BUILD SOURCE CHUNKS FROM CURATED EXCERPTS
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 
 def build_source_chunks(excerpts: list[dict]) -> list[SourceChunk]:
@@ -129,9 +133,9 @@ GROUNDING_RESULT = GroundingResult(
     fetched_at=datetime.now(UTC).isoformat(),
 )
 
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 # MAIN SCRIPT
-# ═══════════════════════════════════════════════════════════
+# â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 
 if __name__ == "__main__":
     # 1. EventStore pointed at a REAL, PERSISTENT path: ./data/events.jsonl

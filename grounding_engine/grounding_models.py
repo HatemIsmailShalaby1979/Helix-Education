@@ -4,7 +4,11 @@ Defines the data structures for retrieved source material and grounding results.
 """
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 
 @dataclass
@@ -67,7 +71,7 @@ class GroundingFetchError(Exception):
 
     This exception is raised for any fetch failure (timeout, non-200
     response, malformed response, network error). It is NOT raised for
-    "no results found" — that case returns a GroundingResult with
+    "no results found" â€” that case returns a GroundingResult with
     chunks=[].
     """
 

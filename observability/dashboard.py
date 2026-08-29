@@ -14,7 +14,11 @@ import os
 import subprocess
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+try:
+    from datetime import UTC, datetime
+except ImportError:
+    from datetime import datetime, timezone
+    UTC = timezone.utc
 
 from state_core.event_models import (
     LearningStateUpdatedEvent,
@@ -109,7 +113,7 @@ class RealTimeMonitor:
                 store_path=self._store_path,
             )
 
-        # Fallback: no LearningStateUpdatedEvent yet — return zeros
+        # Fallback: no LearningStateUpdatedEvent yet â€” return zeros
         return DashboardSnapshot(
             total_topics_studied=total_topics_studied,
             events_replayed=events_replayed,
@@ -160,25 +164,25 @@ class RealTimeMonitor:
         """Print the dashboard title bar."""
         now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
         width = 62
-        print("┌" + "─" * width + "┐")
-        print(f"│  {'HELIX EDUCATION — REAL-TIME MASTERY DASHBOARD'.center(width - 4)}  │")
-        print(f"│  {now.center(width - 4)}  │")
-        print("├" + "─" * width + "┤")
+        print("â”Œ" + "â”€" * width + "â”گ")
+        print(f"â”‚  {'HELIX EDUCATION â€” REAL-TIME MASTERY DASHBOARD'.center(width - 4)}  â”‚")
+        print(f"â”‚  {now.center(width - 4)}  â”‚")
+        print("â”œ" + "â”€" * width + "â”¤")
 
     @staticmethod
     def _print_metrics(snap: DashboardSnapshot) -> None:
         """Print the core numeric metrics section."""
-        print(f"│  Topics Studied:        {str(snap.total_topics_studied).ljust(33)}│")
-        print(f"│  Total Questions Done:  {str(snap.total_questions_studied).ljust(33)}│")
-        print(f"│  Running Avg Score:     {f'{snap.running_average_score:.4f}'.ljust(33)}│")
-        print(f"│  Topics Mastered:       {str(len(snap.topics_mastered)).ljust(33)}│")
-        print(f"│  Topics In Progress:    {str(len(snap.topics_in_progress)).ljust(33)}│")
+        print(f"â”‚  Topics Studied:        {str(snap.total_topics_studied).ljust(33)}â”‚")
+        print(f"â”‚  Total Questions Done:  {str(snap.total_questions_studied).ljust(33)}â”‚")
+        print(f"â”‚  Running Avg Score:     {f'{snap.running_average_score:.4f}'.ljust(33)}â”‚")
+        print(f"â”‚  Topics Mastered:       {str(len(snap.topics_mastered)).ljust(33)}â”‚")
+        print(f"â”‚  Topics In Progress:    {str(len(snap.topics_in_progress)).ljust(33)}â”‚")
 
     @staticmethod
     def _print_topics(snap: DashboardSnapshot) -> None:
         """Print the mastered and in-progress topic lists."""
         width = 62
-        print("├" + "─" * width + "┤")
+        print("â”œ" + "â”€" * width + "â”¤")
         mastered_str = ", ".join(snap.topics_mastered) if snap.topics_mastered else "(none)"
         in_progress_str = ", ".join(snap.topics_in_progress) if snap.topics_in_progress else "(none)"
         label_m = "Mastered:"
@@ -190,27 +194,27 @@ class RealTimeMonitor:
             mastered_str = mastered_str[: width - 17] + "..."
         if len(in_progress_str) > width - 14:
             in_progress_str = in_progress_str[: width - 17] + "..."
-        print(f"│  {label_m} {mastered_str}{' ' * (width - len(label_m) - len(mastered_str) - 4)}│")
-        print(f"│  {label_i} {in_progress_str}{' ' * (width - len(label_i) - len(in_progress_str) - 4)}│")
+        print(f"â”‚  {label_m} {mastered_str}{' ' * (width - len(label_m) - len(mastered_str) - 4)}â”‚")
+        print(f"â”‚  {label_i} {in_progress_str}{' ' * (width - len(label_i) - len(in_progress_str) - 4)}â”‚")
 
     @staticmethod
     def _print_footer(snap: DashboardSnapshot) -> None:
         """Print the footer with event log metadata."""
         width = 62
-        print("├" + "─" * width + "┤")
-        print(f"│  Event Log:  {snap.store_path.ljust(48)}│")
-        print(f"│  Replayed:   {str(snap.events_replayed).ljust(48)}│")
-        print(f"│  Last Event: {snap.last_event_timestamp.ljust(46)}│")
-        print("└" + "─" * width + "┘")
-        print("  Refreshing every 3s · Ctrl+C to stop")
+        print("â”œ" + "â”€" * width + "â”¤")
+        print(f"â”‚  Event Log:  {snap.store_path.ljust(48)}â”‚")
+        print(f"â”‚  Replayed:   {str(snap.events_replayed).ljust(48)}â”‚")
+        print(f"â”‚  Last Event: {snap.last_event_timestamp.ljust(46)}â”‚")
+        print("â””" + "â”€" * width + "â”ک")
+        print("  Refreshing every 3s آ· Ctrl+C to stop")
 
     @staticmethod
     def _print_shutdown() -> None:
         """Print a clean shutdown message."""
-        print("\n  Dashboard stopped. ✓")
+        print("\n  Dashboard stopped. âœ“")
 
 
-# ── Standalone entry point ─────────────────────────────────────────
+# â”€â”€ Standalone entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 def _build_parser() -> argparse.ArgumentParser:
