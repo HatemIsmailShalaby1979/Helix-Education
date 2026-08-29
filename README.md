@@ -1,3 +1,7 @@
+![CI](https://github.com/HatemIsmailShalaby1979/helix-education/actions/workflows/python-app.yml/badge.svg)
+![License](https://img.shields.io/github/license/HatemIsmailShalaby1979/helix-education)
+![Release](https://img.shields.io/github/v/release/HatemIsmailShalaby1979/helix-education)
+
 # Helix Education
 
 > **An event-sourced learning engine built for accountable progress.**
