@@ -31,8 +31,8 @@ helix-web = "helix_education.web_server:main"
 helix-web-v2 = "helix_education.web_server_v2:main"
 
 [project.urls]
-Homepage = "https://github.com/HatemShelby/helix-education"
-Repository = "https://github.com/HatemShelby/helix-education"
+Homepage = "https://github.com/HatemIsmailShalaby1979/Helix-Education"
+Repository = "https://github.com/HatemIsmailShalaby1979/Helix-Education"
 
 [tool.setuptools.packages.find]
 include = ["state_core*", "learning_service*", "content_engine*", "quiz_engine*", "progress_engine*", "delivery_engine*", "api_layer*", "cognitive_engine*", "cognitive_agent*", "helix_education*", "grounding_engine*", "observability*"]
@@ -43,17 +43,15 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP"]
-# TEMPORARY BRIDGE: ignore pre-existing violations to unblock CI (2026-08-05)
-# TODO: remove these ignores after proper code cleanup
 ignore = [
-    "E501",   # line-too-long (146 remaining at 120 chars)
-    "E741",   # ambiguous-variable-name
-    "F841",   # unused-variable
-    "F821",   # undefined-name
-    "F811",   # redefined-while-unused
-    "F401",   # unused-import
-    "W293",   # whitespace-before-punctuation
-    "W291",   # trailing-whitespace
+    "E501",
+    "E741",
+    "F841",
+    "F821",
+    "F811",
+    "F401",
+    "W293",
+    "W291",
 ]
 
 [tool.ruff.lint.isort]
@@ -75,6 +73,8 @@ testpaths = ["tests"]
 addopts = "-v --tb=short"
 markers = [
     "integration: marks tests that require live network access (skipped by default)",
+    "performance: marks performance-oriented tests",
+    "security: marks security-oriented tests",
 ]
 
 [tool.bandit]
