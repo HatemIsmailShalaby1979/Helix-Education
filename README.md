@@ -10,6 +10,10 @@ Helix Education is a standalone learning-state engine designed around replayable
 
 It is a sibling system in the Helix ecosystem — not yet a production-integrated module of Helix Prime.
 
+## Why this exists (human note)
+
+Built solo, self-learning, while switching careers. No team, no external audit, no funding. Helix Education records what a learner actually does — replayable events, sealed assessments, reconstructed paths — so progress is evidence, not guesswork. It does not claim to replace a university. It claims to make learning inspectable.
+
 ## Verified status
 
 - **Alpha / research product**
@@ -83,3 +87,4 @@ The project is a verified standalone engine and a strong ecosystem component. It
 MIT
 
 Part of a larger body of work — see [Hatem Shalaby's profile](https://github.com/HatemIsmailShalaby1979) for the full story.
+
