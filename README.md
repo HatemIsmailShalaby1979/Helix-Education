@@ -1,6 +1,6 @@
-![CI](https://github.com/HatemIsmailShalaby1979/helix-education/actions/workflows/python-app.yml/badge.svg)
-![License](https://img.shields.io/github/license/HatemIsmailShalaby1979/helix-education)
-![Release](https://img.shields.io/github/v/release/HatemIsmailShalaby1979/helix-education)
+> **Status: Alpha / research product — 447 tests passing / not production-integrated / no external audit / no release tag.**
+>
+> Built solo, self-learning, while switching careers. No team, no funding. Event-sourced learning engine — replayable events, sealed assessments, reconstructed paths.
 
 # Helix Education
 
