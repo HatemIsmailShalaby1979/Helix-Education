@@ -1,27 +1,27 @@
-> **Status: Alpha / research product — 447 tests passing / not production-integrated / no external audit / no release tag.**
+> **Status: Alpha / research product — 447 tests passing (snapshot 2026-08-29) / not production-integrated / no external audit / no release tag.**
 >
-> Built solo, self-learning, while switching careers. No team, no funding. Event-sourced learning engine — replayable events, sealed assessments, reconstructed paths.
+> Event-sourced learning engine: replayable events, sealed assessments, reconstructed paths. Built solo, self-taught, after a career switch. No team, no funding.
 
 # Helix Education
 
-> **An event-sourced learning engine built for accountable progress.**
+**A component of Helix Codex. An event-sourced learning engine built for accountable progress.**
 
-Helix Education is a standalone learning-state engine designed around replayable events, citation-grounded content, sealed assessment, adaptive paths, and inspectable learner progress.
+Helix Education supplies the learning foundation that Helix Codex would use. It is a standalone engine built around replayable events, citation-grounded content, sealed assessment, adaptive paths, and inspectable learner progress.
 
-It is a sibling system in the Helix ecosystem — not yet a production-integrated module of Helix Prime.
-
-## Why this exists (human note)
-
-Built solo, self-learning, while switching careers. No team, no external audit, no funding. Helix Education records what a learner actually does — replayable events, sealed assessments, reconstructed paths — so progress is evidence, not guesswork. It does not claim to replace a university. It claims to make learning inspectable.
+It is not Helix Prime. It is a component, and it is not yet wired into the core.
 
 ## Verified status
 
-- **Alpha / research product**
-- **447 tests passing** in the current CI-supported build
-- Core event-sourced learning state is implemented
-- External grounding and LLM services are mocked or stubbed in tests
-- gRPC competency contracts exist, but a functional gRPC service is not yet wired
-- No production client deployment is claimed
+| Item | State | Snapshot |
+|---|---|---|
+| Tests | 447 passing | 2026-08-29 |
+| Core event-sourced learning state | Implemented | 2026-08-29 |
+| gRPC competency service | Contracts exist; service not wired | 2026-08-29 |
+| External grounding and LLM services | Mocked or stubbed in tests | 2026-08-29 |
+| Production client deployment | None | 2026-08-29 |
+| External audit | None | 2026-08-29 |
+
+The engine core has no AI dependency. Every figure above was measured on 2026-08-29 and has not been re-measured since.
 
 ## Core capabilities
 
@@ -35,7 +35,7 @@ Built solo, self-learning, while switching careers. No team, no external audit, 
 
 ## Why it matters to Helix Codex
 
-Helix Education provides the learning and development foundation for the broader Codex direction: operational knowledge can become structured learning, outcomes can improve future training, progress can remain auditable, and learning records can preserve context.
+Operational knowledge can become structured learning. Outcomes can improve future training. Progress stays auditable, and learning records keep their context. That is the capability this repository supplies to Helix Codex.
 
 ## Download and install
 
@@ -74,17 +74,56 @@ Python 3.11–3.13 are supported by current CI workflows.
 
 ## Honest boundary
 
-The project is a verified standalone engine and a strong ecosystem component. It is not presented as a production learning platform or as fully integrated with Helix Prime.
+The gRPC competency service is not wired. External grounding and LLM services are mocked or stubbed in tests. No production client deployment exists, and the engine has not been integrated into Helix Prime.
 
-## Related projects
+This is not a production deployment claim. There is no external audit, no certified data isolation, and no signed security review. No revenue has been realised.
 
-- [Helix Prime](https://github.com/HatemIsmailShalaby1979/Helix-Prime)
-- [Study Studio](https://github.com/HatemIsmailShalaby1979/Study-Studio)
-- [L&D Command Center](https://github.com/HatemIsmailShalaby1979/L-D-Command-Center)
+## Related work
 
-## License
+- [Helix Prime](https://github.com/HatemIsmailShalaby1979/Helix-Prime) — the operations core
+- [Study Studio](https://github.com/HatemIsmailShalaby1979/Study-Studio) — local-first AI tutor
+- [L&D Command Center](https://github.com/HatemIsmailShalaby1979/L-D-Command-Center) — desktop learning and career workstation
+- [Blue Waves](https://github.com/HatemIsmailShalaby1979/Blue-Waves-) — content studio
+- [LIVE Support Assistant](https://github.com/HatemIsmailShalaby1979/LIVE-Support-Assistant) — explainable support prototype
+- [Full portfolio](https://github.com/HatemIsmailShalaby1979) — the front door
+
+### The 2026 building attempts
+
+- [WFM Forecasting Calculator](https://github.com/HatemIsmailShalaby1979/wfm-forecasting-calculator)
+- [RTA Command Center](https://github.com/HatemIsmailShalaby1979/RTA_command_center)
+- [CX Sentiment Sentinel](https://github.com/HatemIsmailShalaby1979/cx-sentiment-sentinel)
+- [Dynamic Ops Automation Engine](https://github.com/HatemIsmailShalaby1979/Dynamic-Ops-Automation-Engine)
+
+## The founder's story
+
+I spent twenty-eight years in contact-centre operations and workforce management.
+Forecasting, scheduling, adherence, service levels, churn. The same problems
+appeared in every company I worked in, and none of the tools solved them properly.
+
+In April 2026 I left that career and started building full time — alone, and
+teaching myself to write software as I went. The first four tools were published
+six weeks later, in May and June 2026. Each one took a single operational problem
+and solved it properly. They were not impressive. They were correct.
+
+Those four tools converged into one idea: **Helix Codex**, an accountable AI
+operating organization. Not an autonomous agent. An organization with a
+constitution, named roles with bounded authority, evidence trails, and a human at
+every consequential boundary. Helix Prime is its operations core.
+
+Helix Education is a component of Helix Codex. It is maintained by one person, with no team and
+no funding. It has not been externally audited and it has not made revenue. Where
+it is unfinished, this document says so.
+
+## Author
+
+**Hatem Ismail Shalaby** — Operations Architect · AI Systems Engineer · Founder
+
+- GitHub: [HatemIsmailShalaby1979](https://github.com/HatemIsmailShalaby1979)
+- LinkedIn: [hatem-shalaby-202902127](https://www.linkedin.com/in/hatem-shalaby-202902127/)
+- Email: hatemshalaby2025@gmail.com
+
+Based in Al Obour City, Al-Qalyubia Governorate, Egypt.
+
+## Licence
 
 MIT
-
-Part of a larger body of work — see [Hatem Shalaby's profile](https://github.com/HatemIsmailShalaby1979) for the full story.
-
