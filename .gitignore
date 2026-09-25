@@ -16,3 +16,7 @@ htmlcov/
 *.log
 .DS_Store
 node_modules/
+
+# Assistant tooling and project-local agent data — not source
+.claude/
+.workbuddy-ai/
