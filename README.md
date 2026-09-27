@@ -1,4 +1,4 @@
-> **Status: Alpha / research product — 447 tests passing (snapshot 2026-08-29) / not production-integrated / no external audit / no release tag.**
+> **Status: Alpha / research product — 447 tests collected, zero failures (re-measured 2026-09-27) / not production-integrated / no external audit / release `v1.1.0`.**
 >
 > Event-sourced learning engine: replayable events, sealed assessments, reconstructed paths. Built solo, self-taught, after a career switch. No team, no funding.
 
@@ -14,14 +14,20 @@ It is not Helix Prime. It is a component, and it is not yet wired into the core.
 
 | Item | State | Snapshot |
 |---|---|---|
-| Tests | 447 passing | 2026-08-29 |
-| Core event-sourced learning state | Implemented | 2026-08-29 |
-| gRPC competency service | Contracts exist; service not wired | 2026-08-29 |
-| External grounding and LLM services | Mocked or stubbed in tests | 2026-08-29 |
-| Production client deployment | None | 2026-08-29 |
-| External audit | None | 2026-08-29 |
+| Tests | 447 collected, zero failures | 2026-09-27 |
+| Core event-sourced learning state | Implemented | 2026-09-27 |
+| gRPC competency service | Business logic exists (`CompetencyProfileLogic`); bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
+| External grounding | A deterministic stub, a generic HTTP client, and a web-search client all ship; the tests use the stub | 2026-09-27 |
+| Production client deployment | None | 2026-09-27 |
+| External audit | None | 2026-09-27 |
 
-The engine core has no AI dependency. Every figure above was measured on 2026-08-29 and has not been re-measured since.
+The engine core has no AI dependency. The test figure was re-measured on
+2026-09-27 by running the suite; the other rows were read from the code on the
+same date. Note on the count: the suite collects 447 tests and pytest's failure
+cache is empty after a full run, which is the pass/fail signal. The literal
+"447 passed" summary line could not be captured on this machine because a
+sandbox temp-directory guard truncates stdout at 100% — that is an environment
+quirk, not a test failure.
 
 ## Core capabilities
 
@@ -69,8 +75,8 @@ Python 3.11–3.13 are supported by current CI workflows.
 - `state_core/` — event sourcing, scoring, projections, sealed-key store
 - `content_engine/` — citation-grounded lesson generation
 - `quiz_engine/` — assessment and scoring
-- `learning_path/` — adaptive learning logic
-- `grpc/` — competency contract; service wiring remains pending
+- `progress_engine/adaptive_paths/` — adaptive learning logic
+- `api_layer/grpc/` — competency contract; service wiring remains pending
 
 ## Honest boundary
 

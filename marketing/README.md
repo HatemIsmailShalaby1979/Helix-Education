@@ -2,12 +2,31 @@
 
 This directory contains the marketing landing page and assets for the Helix Education Center V.2 release.
 
-## Structure
+## Current state (verified 2026-09-27)
+
+Read this before following the rest of this file, because parts of it describe a
+layout that is no longer wired:
+
+- **`index.html` is the only working page, and it is self-contained.** It carries
+  its own inline CSS and links **no external stylesheet**.
+- **`styles.css` is unused.** It is 825 lines and uses an older **green** palette
+  (`--accent: #00ff88`) from a previous design generation. The live page uses
+  **blue** (`#76a9ff`). Nothing references this file.
+- **`style.css` is unused.** A 7-line file referenced by nothing at all.
+- **There is no `Dockerfile` in this directory.** The `EXPOSE 80` /
+  `docker run -p 8080:80 helix-marketing` steps further down cannot be followed;
+  they describe a container build that was never added here.
+
+The page itself is honest and current: it states Alpha status, and that gRPC
+wiring and production integration remain pending.
+
+## Structure, as it actually is
 
 ```text
 marketing/
-├── index.html          # Dark-mode landing page
-├── styles.css          # External stylesheet
+├── index.html          # Dark-mode landing page, self-contained (inline CSS)
+├── styles.css          # Unused — 825 lines, older green palette
+├── style.css           # Unused — 7 lines, referenced by nothing
 ├── architecture.mmd    # Mermaid architecture diagram source
 └── README.md           # This file
 ```
