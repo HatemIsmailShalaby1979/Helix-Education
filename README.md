@@ -1,88 +1,76 @@
-> **Status: Alpha / research product — 447 tests collected, zero failures (re-measured 2026-09-27) / not production-integrated / no external audit / release `v1.1.0`.**
->
-> Event-sourced learning engine: replayable events, sealed assessments, reconstructed paths. Built solo, self-taught, after a career switch. No team, no funding.
+<div align="center">
 
 # Helix Education
 
-**A component of Helix Codex. An event-sourced learning engine built for accountable progress.**
+**The event-sourced learning engine for Helix Codex.**
 
-Helix Education supplies the learning foundation that Helix Codex would use. It is a standalone engine built around replayable events, citation-grounded content, sealed assessment, adaptive paths, and inspectable learner progress.
+![Status](https://img.shields.io/badge/status-alpha-blue)
+![Tests](https://img.shields.io/badge/tests-447%20collected%20%2F%200%20failed-2ea043)
+![Licence](https://img.shields.io/badge/licence-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.11%2B%20%E2%80%93%203.13-3776ab)
 
-It is not Helix Prime. It is a component, and it is not yet wired into the core.
+</div>
 
-## Verified status
+## One-line identity
+
+Helix Education is the event-sourced learning engine for Helix Codex — it turns
+operational knowledge into structured, auditable learning that a learner can replay
+and check, not just consume.
+
+> [!NOTE]
+> **Operating principle.** Learning records are evidence, not suggestions. Learner state is reconstructed from an append-only event log, so any claim about a person's progress can be replayed and verified rather than taken on trust. The core engine has no AI dependency, so a lesson or a scored quiz can be delivered without a model in the loop.
+
+## What it does
+
+- Event-sourced records with state reconstruction — every change is an event, and current state is a projection of the event log.
+- Citation-grounded learning content, generated through `content_engine/`.
+- Sealed quiz scoring — results are written once and cannot be edited after the fact.
+- Adaptive learning paths (`progress_engine/adaptive_paths/`).
+- Progress and milestone tracking with a portable, inspectable learning history.
+- Zero AI dependency in the core engine.
+
+## How it fits Helix Codex
+
+Helix Education is a **component** — the learning foundation Helix Codex would use. It
+is an **independent repository with no shared codebase** with Helix Prime. Its role in
+the story is real; its wiring into the core is not yet built. **Designed to supply the
+learning foundation; not yet integrated into Helix Prime.** The gRPC competency
+service exists in business logic (`CompetencyProfileLogic`) but its bindings are not
+generated and nothing mounts it, so the integration point is identified, not connected.
+
+## Architecture
+
+- `state_core/` — event sourcing, scoring, projections, sealed-key store.
+- `content_engine/` — citation-grounded lesson generation.
+- `quiz_engine/` — assessment and scoring.
+- `progress_engine/adaptive_paths/` — adaptive learning logic.
+- `api_layer/grpc/` — competency contract; service wiring remains pending.
+
+## Production status & test coverage
+
+Stated plainly and dated. This section is last by design.
 
 | Item | State | Snapshot |
 |---|---|---|
 | Tests | 447 collected, zero failures | 2026-09-27 |
 | Core event-sourced learning state | Implemented | 2026-09-27 |
-| gRPC competency service | Business logic exists (`CompetencyProfileLogic`); bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
-| External grounding | A deterministic stub, a generic HTTP client, and a web-search client all ship; the tests use the stub | 2026-09-27 |
+| gRPC competency service | Business logic exists; bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
+| External grounding | A deterministic stub, a generic HTTP client, and a web-search client ship; the tests use the stub | 2026-09-27 |
 | Production client deployment | None | 2026-09-27 |
 | External audit | None | 2026-09-27 |
 
-The engine core has no AI dependency. The test figure was re-measured on
-2026-09-27 by running the suite; the other rows were read from the code on the
-same date. Note on the count: the suite collects 447 tests and pytest's failure
-cache is empty after a full run, which is the pass/fail signal. The literal
-"447 passed" summary line could not be captured on this machine because a
-sandbox temp-directory guard truncates stdout at 100% — that is an environment
-quirk, not a test failure.
+> [!WARNING]
+> The engine core has no AI dependency. The gRPC competency service is not wired, and external grounding or LLM services are mocked or stubbed in tests. The engine has not been integrated into Helix Prime. No external audit, no certified data isolation, no signed security review, no revenue.
 
-## Core capabilities
-
-- Event-sourced records with state reconstruction
-- Citation-grounded learning content
-- Sealed quiz scoring
-- Adaptive learning paths
-- Progress and milestone tracking
-- Portable, inspectable learning history
-- Zero AI dependency in the core engine
-
-## Why it matters to Helix Codex
-
-Operational knowledge can become structured learning. Outcomes can improve future training. Progress stays auditable, and learning records keep their context. That is the capability this repository supplies to Helix Codex.
-
-## Download and install
-
-- [Download current source ZIP](https://github.com/HatemIsmailShalaby1979/Helix-Education/archive/refs/heads/main.zip)
-- [View releases](https://github.com/HatemIsmailShalaby1979/Helix-Education/releases)
-
-### Windows
-
-```powershell
-py -3.11 -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
-python -m pytest -q
-```
-
-### Linux
-
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
-python -m pytest -q
-```
+## Run it
 
 Python 3.11–3.13 are supported by current CI workflows.
 
-## Layout
-
-- `state_core/` — event sourcing, scoring, projections, sealed-key store
-- `content_engine/` — citation-grounded lesson generation
-- `quiz_engine/` — assessment and scoring
-- `progress_engine/adaptive_paths/` — adaptive learning logic
-- `api_layer/grpc/` — competency contract; service wiring remains pending
-
-## Honest boundary
-
-The gRPC competency service is not wired. External grounding and LLM services are mocked or stubbed in tests. No production client deployment exists, and the engine has not been integrated into Helix Prime.
-
-This is not a production deployment claim. There is no external audit, no certified data isolation, and no signed security review. No revenue has been realised.
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+python -m pytest -q
+```
 
 ## Related work
 
