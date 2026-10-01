@@ -64,7 +64,7 @@ Stated plainly and dated. This section is last by design.
 
 ## Run it
 
-Python 3.11–3.13 are supported by current CI workflows.
+Python 3.11–3.13 are covered by the `Python package` CI matrix ([run 36371517812](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517812), 2026-09-28 — all three jobs green).
 
 ```bash
 python -m pip install --upgrade pip
