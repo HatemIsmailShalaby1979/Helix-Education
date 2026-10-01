@@ -24,7 +24,7 @@ and check, not just consume.
 
 - Event-sourced records with state reconstruction — every change is an event, and current state is a projection of the event log.
 - Citation-grounded learning content, generated through `content_engine/`.
-- Sealed quiz scoring — results are written once and cannot be edited after the fact.
+- Sealed quiz scoring — a scored result is appended once, and the store exposes no way to edit it. See *Try it* for what that does and does not guarantee.
 - Adaptive learning paths (`progress_engine/adaptive_paths/`).
 - Progress and milestone tracking with a portable, inspectable learning history.
 - Zero AI dependency in the core engine.
@@ -52,7 +52,7 @@ Stated plainly and dated. This section is last by design.
 
 | Item | State | Snapshot |
 |---|---|---|
-| Tests | 447 passed | 2026-09-28 — [run 36371517881](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517881) |
+| Tests | 447 passed on CI; 460 passed locally | CI 2026-09-28 — [run 36371517881](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517881); local 2026-10-01 |
 | Core event-sourced learning state | Implemented | 2026-09-27 |
 | gRPC competency service | Business logic exists; bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
 | External grounding | A deterministic stub, a generic HTTP client, and a web-search client ship; the tests use the stub | 2026-09-27 |
@@ -74,7 +74,7 @@ python -m pytest -q
 
 ## Try it
 
-Replay a learner's state from an event log, then check that a sealed quiz result cannot be edited. Run from the repository root.
+Replay a learner's state from an event log, then check that a sealed quiz result cannot be edited through the store API. Run from the repository root.
 
 ```python
 from tempfile import TemporaryDirectory
@@ -109,7 +109,11 @@ persisted: 1.0
 
 The learner state is rebuilt from the log alone — nothing is carried in memory between the write and the replay. The last three lines are the sealing check: the store exposes no `update`, `delete` or `remove`, only `append`, so the rewrite attempt on the in-memory event never reaches the persisted record, which still reads `1.0`. The answer key is never written to the log; only its SHA-256 hash appears in the `QuizItemCreatedEvent`.
 
-Scope of that guarantee, stated precisely: it is an append-only guarantee at the store API level. The key store writes plaintext JSONL, and neither the log nor the key file is cryptographically tamper-evident on disk. `EncryptedSealedKeyStore` and the Vault adapter exist in the tree but are not the default path.
+What "sealed" guarantees, stated exactly:
+
+- **Append-only at the store API level.** `EventStore` exposes `append` and the read methods, and no operation that rewrites or removes an event already written. That is an API contract, not tamper-evidence: the log is a plain JSONL file, and anything with write access to the filesystem can edit it.
+- **Where keys live.** The answer key is held in a separate key store, never in the event log. The default location is `<user data dir>/helix-education/sealed_answer_keys.jsonl` — `%LOCALAPPDATA%` on Windows, `$XDG_DATA_HOME` or `~/.local/share` elsewhere. Override it with the `HELIX_SEALED_KEY_PATH` environment variable, or pass `StoreConfig.sealed_keys_path`. The working directory is never used, so running the engine cannot write state into a checkout.
+- **Not encrypted by default.** The default key store is plaintext JSONL. `EncryptedSealedKeyStore` (which now refuses to start without a configured master key rather than falling back to a built-in default) and the Vault adapter both exist in the tree, but neither is wired in.
 
 ## Related work
 
