@@ -3,6 +3,8 @@ S000-03: Helix Education — Technical Spike Findings (read-only)
 Date: 2026-07-25
 Owner: Spike orchestrator (human approval required)
 
+> **Update, 2026-10-01.** The findings below are the record of the 2026-07-25 spike and are left as written. Two details have since changed. The `SealedAnswerKeyStore` default path is now the engine's resolved sealed-key path — `HELIX_SEALED_KEY_PATH` when set, otherwise `<user data dir>/helix-education/sealed_answer_keys.jsonl` (`%LOCALAPPDATA%` on Windows, `$XDG_DATA_HOME` or `~/.local/share` elsewhere) — not a file in the repository. And no CI workflow creates or depends on a repo-root key file: the suite redirects the store to a per-test temporary directory via an autouse fixture in `conftest.py`. The pass count below is the figure measured on that date.
+
 1. Problem Statement
 
 Helix Education requires deterministic, auditable scoring. Answer keys (AnswerKey) must be sealed and stored outside the event log. Previous in-memory store lacked durability; interim file-backed SealedAnswerKeyStore was added to address durability but stores plaintext JSONL on disk.

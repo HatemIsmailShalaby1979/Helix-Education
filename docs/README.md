@@ -187,8 +187,8 @@ For more detailed information about specific components:
 
 ## CI Notes
 
-- Ensure CI creates the sealed answer-key file used by tests at `.sealed_answer_keys.jsonl` with restrictive file permissions (owner-only read/write). On Linux runners set umask or use `install -m 600`/`chmod 600` after creation. On Windows runners restrict ACLs to the build user.
-- CI must create the file (empty) before tests run to avoid permission or concurrency issues and ensure deterministic test environments.
-- Add a dedicated CI step to validate the sealed keys file is present and unreadable by non-build users.
+- CI does **not** create a sealed answer-key file, and no longer needs to. The test suite points `HELIX_SEALED_KEY_PATH` at a per-test temporary directory through an autouse fixture in `conftest.py`, so no test writes a key store into the repository and no key file has to exist before the run.
+- The runtime default is `<user data dir>/helix-education/sealed_answer_keys.jsonl` — `%LOCALAPPDATA%` on Windows, `$XDG_DATA_HOME` or `~/.local/share` elsewhere — overridable with the `HELIX_SEALED_KEY_PATH` environment variable or `StoreConfig.sealed_keys_path`. The working directory is never used.
+- Because the store is no longer created inside the checkout, the earlier permission-hardening steps (`umask`, `install -m 600`/`chmod 600`, Windows ACLs) do not apply to CI. They remain relevant to any deployment that points the store at a shared path.
 - Plan a follow-up decision/implementation to migrate sealed key storage to a KMS-backed sealed store (encrypt at rest, rotate keys, RBAC access). See DEC-2026-0002 for context.
 

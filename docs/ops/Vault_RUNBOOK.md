@@ -50,7 +50,7 @@ Service accounts & tokens
 Backup & migration
 
 - Backup KV by exporting via `vault kv get -format=json` or using replication.
-- Migration tool will create `.sealed_answer_keys.jsonl.bak` as local backup before marking success.
+- Migration tool will create `<source-file>.bak` as a local backup before marking success. `--source-file` defaults to the engine's resolved sealed-key path (`HELIX_SEALED_KEY_PATH`, else `<user data dir>/helix-education/sealed_answer_keys.jsonl`) and never defaults to a path inside the repository.
 - For rollbacks, restore from backup and remove created KV paths (migration tool logs created paths).
 
 Monitoring & auditing

@@ -12,14 +12,14 @@ Migrate plaintext file-backed sealed answer keys to a KMS-backed sealed store wi
 High-level approach
 
 1. Adapter pattern: implement `SealedAnswerKeyStore` interface with two backends:
-   - FileBackend (existing .sealed_answer_keys.jsonl) — local fallback
+   - FileBackend (the plaintext JSONL key store; see `state_core.event_store.default_sealed_key_path`) — local fallback
    - VaultKVBackend (preferred): stores each AnswerKey under KV v2 at `secret/data/helix/sealed_keys/<quiz_item_id>`
 
 2. Migration tool (CLI): `migrate-sealed-keys` reads existing file, writes keys into Vault KV, verifies by readback and hash checks, then performs an atomic switch (marker file or config update).
 
 3. CI integration: run migrations in staging-only pipeline using a Vault dev server (or real Vault in staging) with VAULT_ADDR and VAULT_TOKEN provided via secrets. CI job ensures vault token has minimal policy.
 
-4. Rollback: migration creates a backup of the original file (.sealed_answer_keys.jsonl.bak). If verification fails or on rollback request, the migration tool restores the backup and removes newly written secrets (or marks them deprecated).
+4. Rollback: migration creates a backup of the original file (`<source-file>.bak`). If verification fails or on rollback request, the migration tool restores the backup and removes newly written secrets (or marks them deprecated).
 
 Detailed steps
 
@@ -35,7 +35,7 @@ Implement (3 days)
   - Read source JSONL file (same canonical fields used by compute_key_hash)
   - For each record, write to KV v2 at `<kv_mount>/data/helix/sealed_keys/<quiz_item_id>` with payload: `{"required_keywords": [...], "forbidden_keywords": [...], "min_length_chars": N}`
   - After write, read back and compute hash to compare with compute_key_hash outcome (or check retrieval equality)
-  - On success for all items, create marker file `.sealed_answer_keys.migrated` and archive original file to `.sealed_answer_keys.jsonl.bak`.
+  - On success for all items, create a marker file next to the source file and archive the original to `<source-file>.bak`.
   - If `--atomic-swap` is provided, update repository config (or environment) to point to `vault` backend (e.g., write `SEALED_KEYS_BACKEND=vault` in runtime config). Note: modifying runtime config requires ops approval; default: write local `config/_sealed_store_backend` marker for ops to apply.
 
 Test (1 day)
@@ -131,28 +131,28 @@ Migration CLI spec
 ```
 usage: migrate_sealed_keys.py [--source-file FILE] [--vault-addr ADDR] [--vault-token-env ENVVAR] [--kv-mount secret] [--dry-run] [--backup-path PATH] [--atomic-swap]
 
---source-file: path to existing .sealed_answer_keys.jsonl (default: .sealed_answer_keys.jsonl)
+--source-file: path to the existing plaintext key store (default: the engine's resolved sealed-key path — HELIX_SEALED_KEY_PATH, else <user data dir>/helix-education/sealed_answer_keys.jsonl; never a path inside the repository)
 --vault-addr: VAULT_ADDR
 --vault-token-env: environment variable name that contains Vault token (default: VAULT_TOKEN)
 --kv-mount: KV mount point (default: secret)
 --dry-run: validate mapping without writing to Vault
---backup-path: path to store original backup (default: .sealed_answer_keys.jsonl.bak)
+--backup-path: path to store original backup (default: <source-file>.bak)
 --atomic-swap: on success, create marker and optionally update runtime config
 ```
 
 Atomic migration and config switch
-- Implement `--atomic-swap` as: after successful writes and verification, write a marker file `.sealed_answer_keys.migrated` and copy original file to backup. Do NOT automatically change production runtime configs; instead write the recommended env var change to `config/.sealed_store_backend` for ops to apply.
+- Implement `--atomic-swap` as: after successful writes and verification, write a marker file `.sealed_answer_keys.migrated` next to the source file and copy the original file to backup. Do NOT automatically change production runtime configs; instead write the recommended env var change to `config/.sealed_store_backend` for ops to apply.
 
 CI integration (job snippet)
 
 - Add a staging job that runs Vault (dev server) for migration test:
   - Start Vault dev server in background (vault server -dev -dev-root-token-id="root")
   - Export VAULT_ADDR and VAULT_TOKEN
-  - Run `scripts/migrate_sealed_keys.py --source-file .sealed_answer_keys.jsonl --vault-addr ${VAULT_ADDR} --vault-token-env VAULT_TOKEN --kv-mount secret --dry-run` then real run in staging
+  - Run `scripts/migrate_sealed_keys.py --vault-addr ${VAULT_ADDR} --vault-token-env VAULT_TOKEN --kv-mount secret --dry-run` then a real run in staging. Pass `--source-file` explicitly when the store is not at the resolved default.
 
 Rollback strategy
 
-- Keep original file backup `.sealed_answer_keys.jsonl.bak`
+- Keep the original file backup (`<source-file>.bak`)
 - If migration fails, use the backup to restore and remove newly created KV secrets (migration tool can record created paths in a log and remove them on rollback).
 
 Deliverables

@@ -72,7 +72,7 @@ class EncryptedSealedKeyStore:
 
         entry = {"id": assessment_id, "data": base64.b64encode(ciphertext).decode(), "timestamp": self._get_timestamp()}
 
-        with open(self.storage_path, "a") as f:
+        with open(self.storage_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry) + "\n")
         logger.info(f"Encrypted key stored for assessment {assessment_id}")
 
@@ -81,7 +81,7 @@ class EncryptedSealedKeyStore:
         if not os.path.exists(self.storage_path):
             return None
 
-        with open(self.storage_path) as f:
+        with open(self.storage_path, encoding="utf-8") as f:
             for line in f:
                 entry = json.loads(line.strip())
                 if entry["id"] == assessment_id:
