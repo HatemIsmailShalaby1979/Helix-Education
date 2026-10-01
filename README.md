@@ -52,7 +52,7 @@ Stated plainly and dated. This section is last by design.
 
 | Item | State | Snapshot |
 |---|---|---|
-| Tests | 465 passed | 2026-10-01 — [run 36807198469](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36807198469) at `4bd6c02` |
+| Tests | 465 passed | 2026-10-01 — [run 36807198469](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36807198469) at `4bd6c02` (latest code change; later commits are docs-only, see the live badge) |
 | Core event-sourced learning state | Implemented | 2026-09-27 |
 | gRPC competency service | Business logic exists; bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
 | External grounding | A deterministic stub, a generic HTTP client, and a web-search client ship; the tests use the stub | 2026-09-27 |
