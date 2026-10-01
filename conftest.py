@@ -17,6 +17,23 @@ from state_core.event_models import (
 from state_core.event_store import EventStore, SealedAnswerKeyStore, StoreConfig
 
 
+@pytest.fixture(autouse=True)
+def isolate_sealed_key_store(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
+    """Point the default sealed-key store at a per-test temporary path.
+
+    A full test run must not write runtime state into the repository. The
+    store resolves its default path from HELIX_SEALED_KEY_PATH at
+    construction time, so setting that variable here covers every test that
+    builds a SealedAnswerKeyStore without an explicit path.
+
+    Inputs:
+        tmp_path: pytest's per-test temporary directory.
+        monkeypatch: pytest's environment patcher, reverted after the test.
+    """
+    monkeypatch.setenv("HELIX_SEALED_KEY_PATH", str(tmp_path / "sealed_answer_keys.jsonl"))
+    yield
+
+
 @pytest.fixture
 def sealed_key_store() -> SealedAnswerKeyStore:
     """Provide a fresh in-memory SealedAnswerKeyStore."""

@@ -20,3 +20,8 @@ node_modules/
 # Assistant tooling and project-local agent data — not source
 .claude/
 .workbuddy-ai/
+
+# Sealed answer-key store runtime state — never source
+.sealed_answer_keys.jsonl
+.sealed_answer_keys.jsonl.bak
+.sealed_answer_keys.migrated

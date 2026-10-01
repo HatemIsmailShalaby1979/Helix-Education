@@ -8,6 +8,7 @@ a full replay; the bad line is logged and skipped.
 import hashlib
 import json
 import logging
+import os
 import time
 from dataclasses import dataclass
 
@@ -17,6 +18,32 @@ from .event_models import Event
 from .scoring_engine import AnswerKey
 
 logger = logging.getLogger(__name__)
+
+
+def default_sealed_key_path() -> str:
+    """Resolve the default on-disk path for the sealed answer-key store.
+
+    Precedence:
+        1. The HELIX_SEALED_KEY_PATH environment variable, when set and non-empty.
+        2. ``<user data directory>/helix-education/sealed_answer_keys.jsonl``,
+           where the user data directory is ``%LOCALAPPDATA%`` on Windows and
+           ``$XDG_DATA_HOME`` (or ``~/.local/share``) elsewhere.
+
+    The current working directory is never used, so a test run or a script
+    launched from the repository root cannot write runtime state into the
+    working tree.
+
+    Returns:
+        An absolute path to the sealed answer-key JSONL file.
+    """
+    override = os.environ.get("HELIX_SEALED_KEY_PATH", "").strip()
+    if override:
+        return override
+    if os.name == "nt":
+        base = os.environ.get("LOCALAPPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Local")
+    else:
+        base = os.environ.get("XDG_DATA_HOME") or os.path.join(os.path.expanduser("~"), ".local", "share")
+    return os.path.join(base, "helix-education", "sealed_answer_keys.jsonl")
 
 
 @dataclass
@@ -135,7 +162,11 @@ class SealedAnswerKeyStore:
 
     def __init__(self, config: StoreConfig | None = None) -> None:
         self._config = config
-        self._path = config.sealed_keys_path if (config and config.sealed_keys_path) else ".sealed_answer_keys.jsonl"
+        self._path = (
+            config.sealed_keys_path
+            if (config and config.sealed_keys_path)
+            else default_sealed_key_path()
+        )
         self._keys: dict[str, AnswerKey] = {}
         try:
             with open(self._path, encoding="utf-8") as f:
@@ -173,6 +204,9 @@ class SealedAnswerKeyStore:
             "min_length_chars": key.min_length_chars,
         }
         line = json.dumps(record, ensure_ascii=False, sort_keys=True)
+        parent = os.path.dirname(self._path)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
         with open(self._path, "a", encoding="utf-8") as f:
             f.write(line + "\n")
             f.flush()
