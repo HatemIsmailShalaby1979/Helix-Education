@@ -5,7 +5,7 @@
 **The event-sourced learning engine for Helix Codex.**
 
 ![Status](https://img.shields.io/badge/status-alpha-blue)
-![Tests](https://img.shields.io/badge/tests-447%20collected%20%2F%200%20failed-2ea043)
+[![CI](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517881)
 ![Licence](https://img.shields.io/badge/licence-MIT-blue)
 ![Python](https://img.shields.io/badge/python-3.11%2B%20%E2%80%93%203.13-3776ab)
 
@@ -52,7 +52,7 @@ Stated plainly and dated. This section is last by design.
 
 | Item | State | Snapshot |
 |---|---|---|
-| Tests | 447 collected, zero failures | 2026-09-27 |
+| Tests | 447 passed | 2026-09-28 — [run 36371517881](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517881) |
 | Core event-sourced learning state | Implemented | 2026-09-27 |
 | gRPC competency service | Business logic exists; bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
 | External grounding | A deterministic stub, a generic HTTP client, and a web-search client ship; the tests use the stub | 2026-09-27 |
