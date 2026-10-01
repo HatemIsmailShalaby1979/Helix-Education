@@ -9,6 +9,7 @@ import base64
 import json
 import logging
 import os
+from datetime import UTC, datetime
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
@@ -16,20 +17,41 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 logger = logging.getLogger(__name__)
 
+ENV_MASTER_KEY = "HELIX_KMS_MASTER_KEY"
+
+
+class MissingMasterKeyError(ValueError):
+    """Raised when no KMS master key is configured.
+
+    Fail-closed: the store refuses to derive an encryption key from a
+    built-in default, because doing so would silently produce ciphertext
+    that any reader of the source can decrypt.
+    """
+
 
 class EncryptedSealedKeyStore:
-    def __init__(self, storage_path: str, kms_master_key: str = None):
-        """
-        Initialize the encrypted store.
+    def __init__(self, storage_path: str, kms_master_key: str | None = None) -> None:
+        """Initialize the encrypted store.
 
-        Args:
+        Inputs:
             storage_path: Path to the encrypted JSONL file.
             kms_master_key: The master key from KMS (or a local secret for dev).
+                When None or empty, the HELIX_KMS_MASTER_KEY environment
+                variable is used.
+        Raises:
+            MissingMasterKeyError: If neither argument nor environment
+                supplies a non-empty master key.
         """
         self.storage_path = storage_path
-        # In production, this would interact with Azure Key Vault or AWS KMS
-        # For this implementation, we use the provided key to derive a Fernet key
-        self._master_key = kms_master_key or os.getenv("HELIX_KMS_MASTER_KEY", "dev-secret-key")
+        # In production, this would interact with Azure Key Vault or AWS KMS.
+        # For this implementation, the provided key derives a Fernet key.
+        master_key = kms_master_key or os.environ.get(ENV_MASTER_KEY) or ""
+        if not master_key.strip():
+            raise MissingMasterKeyError(
+                "No KMS master key configured. Pass kms_master_key explicitly or set "
+                f"{ENV_MASTER_KEY}. Refusing to fall back to a built-in default key."
+            )
+        self._master_key = master_key
         self._fernet = self._derive_fernet_key()
 
     def _derive_fernet_key(self) -> Fernet:
@@ -43,7 +65,7 @@ class EncryptedSealedKeyStore:
         key = base64.urlsafe_b64encode(kdf.derive(self._master_key.encode()))
         return Fernet(key)
 
-    def store_key(self, assessment_id: str, answer_key: dict):
+    def store_key(self, assessment_id: str, answer_key: dict) -> None:
         """Encrypts and appends an answer key to the store."""
         plaintext = json.dumps(answer_key).encode()
         ciphertext = self._fernet.encrypt(plaintext)
@@ -54,7 +76,7 @@ class EncryptedSealedKeyStore:
             f.write(json.dumps(entry) + "\n")
         logger.info(f"Encrypted key stored for assessment {assessment_id}")
 
-    def retrieve_key(self, assessment_id: str) -> dict:
+    def retrieve_key(self, assessment_id: str) -> dict | None:
         """Retrieves and decrypts an answer key by ID."""
         if not os.path.exists(self.storage_path):
             return None
@@ -68,7 +90,6 @@ class EncryptedSealedKeyStore:
                     return json.loads(plaintext)
         return None
 
-    def _get_timestamp(self):
-        from datetime import datetime
-
-        return datetime.utcnow().isoformat()
+    def _get_timestamp(self) -> str:
+        """Return the current UTC time as a timezone-aware ISO 8601 string."""
+        return datetime.now(UTC).isoformat()

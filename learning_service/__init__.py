@@ -21,7 +21,7 @@ from state_core.event_models import (
     TopicPassedEvent,
     TopicStartedEvent,
 )
-from state_core.event_store import EventStore
+from state_core.event_store import EventStore, SealedAnswerKeyStore
 from state_core.leveling_engine import compute_level
 from state_core.llm_evaluation import LLMEvaluationResult, LLMEvaluationService
 from state_core.projections import (
@@ -31,7 +31,6 @@ from state_core.projections import (
     project_topic_state,
 )
 from state_core.scoring_engine import AnswerKey
-from state_core.security.encrypted_key_store import EncryptedSealedKeyStore
 
 
 @dataclass
@@ -70,7 +69,7 @@ class LearningService:
     def __init__(
         self,
         event_store: EventStore,
-        key_store: EncryptedSealedKeyStore,
+        key_store: SealedAnswerKeyStore,
         llm_evaluation: LLMEvaluationService | None = None,
     ) -> None:
         self._event_store = event_store
