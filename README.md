@@ -72,6 +72,45 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
+## Try it
+
+Replay a learner's state from an event log, then check that a sealed quiz result cannot be edited. Run from the repository root.
+
+```python
+from tempfile import TemporaryDirectory
+from state_core.event_store import EventStore, SealedAnswerKeyStore, StoreConfig
+from state_core.event_models import AnswerScoredEvent, QuizItemCreatedEvent
+from state_core.scoring_engine import AnswerKey
+from state_core.projections import project_topic_state
+from learning_service import LearningService
+
+with TemporaryDirectory() as tmp:
+    store = EventStore(StoreConfig(path=f"{tmp}/learner.jsonl"))
+    svc = LearningService(store, SealedAnswerKeyStore(StoreConfig(path="", sealed_keys_path=f"{tmp}/keys.jsonl")))
+    svc.create_quiz_item("safeguarding", "saf-1", "q1", "Name the four categories.", "short_answer", "easy",
+                         AnswerKey(required_keywords=["physical", "emotional", "neglect", "sexual"]))
+    svc.submit_and_score_answer("q1", "physical, emotional, neglect and sexual harm")
+    state = project_topic_state(store.read_all(), "safeguarding")
+    next(e for e in store.read_all() if isinstance(e, AnswerScoredEvent)).raw_score = 0.0  # rewrite attempt
+    print("replayed :", state.topic, "| attempts", state.attempts_total, "| passes", state.pass_count)
+    print("sealed   :", next(e.answer_key_hash for e in store.read_all() if isinstance(e, QuizItemCreatedEvent))[:16])
+    print("edit API :", [m for m in ("update", "delete", "remove") if hasattr(store, m)] or "none (append-only)")
+    print("persisted:", next(e.raw_score for e in store.read_all() if isinstance(e, AnswerScoredEvent)))
+```
+
+Real output (2026-10-01, Python 3.13.12):
+
+```
+replayed : safeguarding | attempts 1 | passes 1
+sealed   : 6ec99c50195ae0a7
+edit API : none (append-only)
+persisted: 1.0
+```
+
+The learner state is rebuilt from the log alone — nothing is carried in memory between the write and the replay. The last three lines are the sealing check: the store exposes no `update`, `delete` or `remove`, only `append`, so the rewrite attempt on the in-memory event never reaches the persisted record, which still reads `1.0`. The answer key is never written to the log; only its SHA-256 hash appears in the `QuizItemCreatedEvent`.
+
+Scope of that guarantee, stated precisely: it is an append-only guarantee at the store API level. The key store writes plaintext JSONL, and neither the log nor the key file is cryptographically tamper-evident on disk. `EncryptedSealedKeyStore` and the Vault adapter exist in the tree but are not the default path.
+
 ## Related work
 
 - [Helix Prime](https://github.com/HatemIsmailShalaby1979/Helix-Prime) — the operations core
