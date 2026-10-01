@@ -5,7 +5,7 @@
 **The event-sourced learning engine for Helix Codex.**
 
 ![Status](https://img.shields.io/badge/status-alpha-blue)
-[![CI](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517881)
+[![CI](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36807198469)
 ![Licence](https://img.shields.io/badge/licence-MIT-blue)
 ![Python](https://img.shields.io/badge/python-3.11%2B%20%E2%80%93%203.13-3776ab)
 
@@ -52,7 +52,7 @@ Stated plainly and dated. This section is last by design.
 
 | Item | State | Snapshot |
 |---|---|---|
-| Tests | 447 passed on CI; 460 passed locally | CI 2026-09-28 — [run 36371517881](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517881); local 2026-10-01 |
+| Tests | 465 passed | 2026-10-01 — [run 36807198469](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36807198469) at `4bd6c02` |
 | Core event-sourced learning state | Implemented | 2026-09-27 |
 | gRPC competency service | Business logic exists; bindings not generated, registration commented out, nothing mounts it | 2026-09-27 |
 | External grounding | A deterministic stub, a generic HTTP client, and a web-search client ship; the tests use the stub | 2026-09-27 |
@@ -64,7 +64,7 @@ Stated plainly and dated. This section is last by design.
 
 ## Run it
 
-Python 3.11–3.13 are covered by the `Python package` CI matrix ([run 36371517812](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36371517812), 2026-09-28 — all three jobs green).
+Python 3.11–3.13 are covered by the `Python package` CI matrix ([run 36807198387](https://github.com/HatemIsmailShalaby1979/Helix-Education/actions/runs/36807198387), 2026-10-01 — `465 passed` on 3.11, 3.12 and 3.13).
 
 ```bash
 python -m pip install --upgrade pip
