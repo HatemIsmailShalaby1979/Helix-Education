@@ -25,3 +25,9 @@ node_modules/
 .sealed_answer_keys.jsonl
 .sealed_answer_keys.jsonl.bak
 .sealed_answer_keys.migrated
+
+# Generated data and runtime event logs — regenerable, never source
+data/migration_backfill.jsonl
+data/test_sealed_keys.jsonl
+helix_events.jsonl
+test_events.jsonl
